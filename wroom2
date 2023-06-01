@@ -1,0 +1,167 @@
+
+esphome:
+  name: prodino
+ 
+esp8266:
+  board: esp_wroom_02
+
+# Enable logging
+logger:
+  baud_rate: 0
+# Enable Home Assistant API
+api:
+ota:
+  password: "b675f32edf5f79fbf273824f0b4b75ea"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+      static_ip: 192.168.1.200
+      gateway: 192.168.1.1
+      subnet: 255.255.255.0
+      
+      
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Prodino Fallback Hotspot"
+    password: "hhp3ci7WEr7s"
+
+captive_portal:
+
+
+# Example configuration entry
+spi:
+  clk_pin: GPIO14
+  mosi_pin: GPIO13
+  miso_pin: GPIO12
+
+mcp23s08:
+  - id: 'mcp23s08_hub'
+    cs_pin: GPIO15
+    deviceaddress: 0
+binary_sensor:
+  - platform: gpio
+    name: "Input 1"
+    pin:
+      mcp23xxx: mcp23s08_hub
+      number: 0
+      mode:
+        input: true
+      inverted: true
+  - platform: gpio
+    name: "Input 2"
+    pin:
+      mcp23xxx: mcp23s08_hub
+      number: 1
+      mode:
+        input: true
+      inverted: true 
+  - platform: gpio
+    name: "Input 3"
+    pin:
+      mcp23xxx: mcp23s08_hub
+      number: 2
+      mode:
+        input: true
+      inverted: false
+  - platform: gpio
+    name: "Input 4"
+    pin:
+      mcp23xxx: mcp23s08_hub
+      number: 3
+      mode:
+        input: true
+      inverted: false  
+    on_press:
+      - switch.turn_on: relay_4
+# Individual outputs
+switch:  
+  - platform: gpio
+    name: "Relay 1"
+    pin:
+      mcp23xxx: mcp23s08_hub
+      # Use pin number 0
+      number: 4
+      # One of INPUT, INPUT_PULLUP or OUTPUT
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    name: "Relay 2"
+    pin:
+      mcp23xxx: mcp23s08_hub
+      # Use pin number 0
+      number: 5
+      # One of INPUT, INPUT_PULLUP or OUTPUT
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    name: "Relay 3"
+    pin:
+      mcp23xxx: mcp23s08_hub
+      # Use pin number 1
+      number: 6
+      # One of INPUT or INPUT_PULLUP
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    name: "Relay 4"
+    id: relay_4
+    pin:
+      mcp23xxx: mcp23s08_hub
+      # Use pin number 1
+      number: 7
+      # One of INPUT or INPUT_PULLUP
+      mode:
+        output: true
+      inverted: false
+
+# Example configuration entry
+
+uart:
+  id: mod_bus
+  tx_pin: GPIO01
+  rx_pin: GPIO03
+  baud_rate: 2400
+  stop_bits: 1
+  debug:
+modbus:
+  flow_control_pin: 
+   number: GPIO16
+   inverted: true
+  id: modbus1
+
+
+sensor:
+  - platform: sdm_meter
+    phase_a:
+      current:
+        name: "SDM Corrente"
+      voltage:
+        name: "SDM Tensione"
+      active_power:
+        name: "SD Potenza"
+      power_factor:
+        name: "SDM Fattore di Potenza"
+      apparent_power:
+        name: "SDM Potenza apparente"
+      reactive_power:
+        name: "SDM Potenza Reattiva"
+      phase_angle:
+        name: "SDM Angolo Di Fase"
+    frequency:
+      name: "SDM Frequenza"
+    total_power:
+      name: "SDM Energia Totale "
+    import_active_energy:
+      name: "SDM230M Import Active Energy"
+    export_active_energy:
+      name: "SDM230M Export Active Energy"
+    import_reactive_energy:
+      name: "SDM230M Import Reactive Energy"
+    export_reactive_energy:
+      name: "SDM230M Export Reactive Energy"
+    update_interval: 3s
