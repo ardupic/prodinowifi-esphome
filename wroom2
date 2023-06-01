@@ -73,8 +73,7 @@ binary_sensor:
       mode:
         input: true
       inverted: false  
-    on_press:
-      - switch.turn_on: relay_4
+
 # Individual outputs
 switch:  
   - platform: gpio
